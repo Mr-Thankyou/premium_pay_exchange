@@ -75,7 +75,7 @@ export default function Footer() {
       </FooterContainer>
 
       <FooterBottom>
-        © 2025 Premium Pay Exchange. All rights reserved.
+        © 2026 Premium Pay Exchange. All rights reserved.
       </FooterBottom>
     </FooterWrapper>
   );
