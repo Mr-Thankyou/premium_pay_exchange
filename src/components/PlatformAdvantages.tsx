@@ -87,6 +87,10 @@ export default function PlatformAdvantages() {
 const AdvantagesSection = styled.section`
   padding: 100px 10px;
   background: #1f232e;
+
+  @media (max-width: 600px) {
+    padding: 70px 10px;
+  }
 `;
 
 const AdvantagesWrapper = styled.div`

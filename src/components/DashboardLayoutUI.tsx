@@ -17,6 +17,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
 import { clearUser } from "@/lib/store/userSlice";
+import { orbitron } from "@/app/fonts";
 
 const links = [
   { href: "/dashboard", label: "Home", icon: <FaHome /> },
@@ -111,6 +112,17 @@ export default function DashboardLayoutUI({
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
+                {user?.gasBalance && user.gasBalance > 0 ? (
+                  <GasBalance>
+                    GAS: $
+                    {user.gasBalance.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </GasBalance>
+                ) : (
+                  ""
+                )}
               </p>
               <p>
                 Click the link below, to buy Bitcoin and other cryptocurrency
@@ -260,6 +272,12 @@ const Sidebar = styled.aside<{ $collapsed: boolean }>`
     transition: transform 0.3s ease-in-out;
     transform: ${(p) => (p.$collapsed ? "translateX(-100%)" : "translateX(0)")};
   }
+
+  svg {
+    @media (max-width: 500px) {
+      width: 25px;
+    }
+  }
 `;
 
 const Overlay = styled.div<{ $show: boolean }>`
@@ -323,6 +341,14 @@ const BuyBTCBox = styled.div`
   }
 `;
 
+const GasBalance = styled.span`
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  color: #ff8f1f;
+  font-family: ${orbitron.style.fontFamily};
+`;
+
 const User = styled.h3`
   color: white;
   margin-top: 10px;
@@ -333,6 +359,10 @@ const Links = styled.div`
   gap: 15px;
   margin-top: 30px;
   grid-template-columns: 1fr 1fr;
+
+  @media (max-width: 500px) {
+    gap: 10px;
+  }
 `;
 
 const LinkItem = styled(Link)<{ $active?: boolean }>`
@@ -344,6 +374,10 @@ const LinkItem = styled(Link)<{ $active?: boolean }>`
   border-radius: 12px;
   cursor: pointer;
   background: ${(props) => (props.$active ? "#232733" : "transparent")};
+
+  @media (max-width: 500px) {
+    padding: 20px 8px;
+  }
 
   svg,
   p {

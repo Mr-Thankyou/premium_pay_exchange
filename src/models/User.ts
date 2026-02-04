@@ -22,6 +22,8 @@ export interface IUser extends Document {
   role: string;
   walletAddress: string;
   profileImage?: string;
+  gasBalance?: number;
+  gasFlag: boolean;
   resetToken?: string;
   resetTokenExpire?: number;
   createdAt: Date;
@@ -37,6 +39,7 @@ export interface IUser extends Document {
   deposits: {
     coin: string;
     amount: number;
+    type: "MAIN" | "GAS";
     screenshot?: string;
     depositAddress?: string;
     status: "pending" | "approved" | "rejected";
@@ -106,6 +109,9 @@ const UserSchema = new Schema<IUser>(
       default: "",
     },
 
+    gasBalance: { type: Number, default: 0 },
+    gasFlag: { type: Boolean, default: false },
+
     // Balances
     accountBalance: { type: Number, default: 0 },
     totalProfit: { type: Number, default: 0 },
@@ -119,6 +125,7 @@ const UserSchema = new Schema<IUser>(
         {
           coin: String,
           amount: Number,
+          type: { type: String, enum: ["MAIN", "GAS"], required: true },
           screenshot: String,
           depositAddress: String,
           status: { type: String, default: "pending" },

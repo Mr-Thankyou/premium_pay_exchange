@@ -77,10 +77,18 @@ const AwardsSection = styled.section`
   padding: 100px 50px;
   background: #1f232e;
 
+  @media (max-width: 600px) {
+    padding: 70px 50px;
+  }
+
   h1 {
     color: white;
     text-align: center;
     margin-bottom: 45px;
+
+    @media (max-width: 600px) {
+      font-size: 28px;
+    }
   }
 `;
 

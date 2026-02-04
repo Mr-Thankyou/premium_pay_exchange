@@ -216,6 +216,10 @@ export default function ProfilePage() {
 const Wrapper = styled.div`
   padding: 30px;
   color: #fff;
+
+  @media (max-width: 500px) {
+    padding: 30px 20px;
+  }
 `;
 
 const ProfileHeader = styled.div`
@@ -223,11 +227,21 @@ const ProfileHeader = styled.div`
   gap: 50px;
   align-items: flex-start;
   flex-wrap: wrap;
+
+  @media (max-width: 600px) {
+    align-items: center;
+    gap: 30px;
+  }
 `;
 
 const ProfileImageWrapper = styled.div`
   position: relative;
   cursor: pointer;
+
+  svg {
+    @media (max-width: 600px) {
+      width: 100px;
+  }
 
   /* &:hover div {
     opacity: 1;
@@ -239,6 +253,11 @@ const ProfileImage = styled.img`
   height: 120px;
   border-radius: 50%;
   object-fit: cover;
+
+  @media (max-width: 600px) {
+    width: 100px;
+    height: 100px;
+  }
 `;
 
 const UploadOverlay = styled.div`

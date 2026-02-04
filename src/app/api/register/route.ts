@@ -82,7 +82,7 @@ export async function POST(req: Request) {
       walletAddress,
     });
 
-    console.log("New user created:", newUser);
+    // console.log("New user created:", newUser);
     return NextResponse.json(
       { message: "Registration successful", user: newUser },
       { status: 201 },

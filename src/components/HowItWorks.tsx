@@ -60,6 +60,10 @@ const Wrapper = styled.section`
   padding: 80px 20px;
   text-align: center;
   color: white;
+
+  @media (max-width: 600px) {
+    padding: 60px 20px;
+  }
 `;
 
 const Title = styled.h2`
@@ -67,6 +71,10 @@ const Title = styled.h2`
   margin-bottom: 50px;
   text-transform: uppercase;
   font-weight: bold;
+
+  @media (max-width: 600px) {
+    font-size: 28px;
+  }
 `;
 
 const Grid = styled.div`

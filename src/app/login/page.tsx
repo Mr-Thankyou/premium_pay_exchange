@@ -109,7 +109,7 @@ export default function LoginPage() {
           Don’t have an account?
           <LinkSpan onClick={() => router.push("/register")}> Sign Up</LinkSpan>
         </BottomText>
-        <Footer>© 2025 Premium Pay Exchange. All Rights Reserved.</Footer>
+        <Footer>© 2026 Premium Pay Exchange. All Rights Reserved.</Footer>
       </Card>
     </Wrapper>
   );

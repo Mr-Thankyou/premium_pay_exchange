@@ -40,9 +40,10 @@ export default function HomePage() {
             <Logo
               src={logo}
               alt="PPE Logo"
-              width={100}
+              // width={100}
               //   height={100}
             />
+
             <Auth>
               {user ? (
                 <AuthButton
@@ -146,7 +147,14 @@ const NavItems = styled.div`
   }
 `;
 
-const Logo = styled(Image)``;
+const Logo = styled(Image)`
+  width: 100px;
+  height: auto;
+
+  @media (max-width: 600px) {
+    width: 75px;
+  }
+`;
 
 const Auth = styled.div``;
 
@@ -180,6 +188,7 @@ const HeroSection = styled.div`
 
   @media (max-width: 650px) {
     gap: 70px;
+    margin-top: 40px;
   }
 
   h1 {
@@ -188,8 +197,8 @@ const HeroSection = styled.div`
     /* line-height: 1.5; */
     letter-spacing: 2px;
 
-    @media (max-width: 650px) {
-      font-size: 46px;
+    @media (max-width: 600px) {
+      font-size: 40px;
     }
   }
 `;

@@ -142,6 +142,12 @@ const SliderWrapper = styled.div`
     font-size: 40px;
     color: #817f7f;
   }
+
+  h1 {
+    @media (max-width: 600px) {
+      font-size: 28px;
+    }
+  }
 `;
 
 const Slide = styled.div`

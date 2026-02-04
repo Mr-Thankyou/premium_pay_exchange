@@ -46,6 +46,9 @@ export async function POST(req: Request) {
       date: new Date(),
     });
 
+    const GAS_PERCENT = 0.05;
+    const gasFee = Math.ceil(num * GAS_PERCENT);
+
     user.transactions.push({
       type: "withdrawal",
       title: "Account Withdrawal",
@@ -53,6 +56,7 @@ export async function POST(req: Request) {
       amount,
       coin,
       status: "pending",
+      reference: `GAS_REQUIRED_${gasFee}`,
     });
 
     await user.save();
@@ -61,7 +65,7 @@ export async function POST(req: Request) {
     await sendEmail({
       to: user.email,
       subject: "Withdrawal Request Received (Pending)",
-      text: `We have received your withdrawal request of ${amount} ${coin}. Your request is currently pending admin review. You will be notified once it is processed.`,
+      text: `We have received your withdrawal request of ${amount} ${coin}. Your request is currently pending. You will be notified once it is processed.`,
       html: `
     <h2>Withdrawal Request Received</h2>
     <p>We have received your withdrawal request and it is currently under review.</p>

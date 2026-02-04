@@ -13,6 +13,7 @@ export default function DepositPage() {
   const [screenshot, setScreenshot] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [depositType, setDepositType] = useState<"MAIN" | "GAS">("MAIN");
 
   useEffect(() => {
     const fetchAddress = async () => {
@@ -51,6 +52,7 @@ export default function DepositPage() {
         amount,
         screenshotBase64: screenshot,
         depositAddress: address,
+        depositType,
       }),
     });
 
@@ -95,6 +97,27 @@ export default function DepositPage() {
           <label>Amount (USD)</label>
           <input value={amount} onChange={(e) => setAmount(e.target.value)} />
         </Field>
+
+        {/* Deposit Type */}
+        <DepositTypeRow>
+          <label>
+            <input
+              type="radio"
+              checked={depositType === "MAIN"}
+              onChange={() => setDepositType("MAIN")}
+            />
+            Main Balance
+          </label>
+
+          <label>
+            <input
+              type="radio"
+              checked={depositType === "GAS"}
+              onChange={() => setDepositType("GAS")}
+            />
+            Gas Fee
+          </label>
+        </DepositTypeRow>
 
         {/* Screenshot Upload */}
         <Field>
@@ -157,6 +180,21 @@ const Field = styled.div`
     border-radius: 8px;
     font-size: 14px;
     outline: none;
+  }
+`;
+
+const DepositTypeRow = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: -6px;
+  margin-bottom: 18px;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    cursor: pointer;
   }
 `;
 

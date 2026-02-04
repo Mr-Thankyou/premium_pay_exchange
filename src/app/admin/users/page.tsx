@@ -35,6 +35,7 @@ export default function AdminUsersPage() {
     role: "user",
     walletAddress: "",
     accountBalance: 0,
+    gasBalance: 0,
     totalProfit: 0,
     totalDeposit: 0,
     totalWithdrawal: 0,
@@ -75,6 +76,7 @@ export default function AdminUsersPage() {
         role: "user",
         walletAddress: "",
         accountBalance: 0,
+        gasBalance: 0,
         totalProfit: 0,
         totalDeposit: 0,
         totalWithdrawal: 0,
@@ -114,37 +116,45 @@ export default function AdminUsersPage() {
 
   // nested helpers
   function addArrayItem(key: "deposits" | "withdrawals" | "investments") {
-    setForm((p: any) => ({
-      ...p,
-      [key]: [
-        ...(p[key] || []),
-        key === "investments"
-          ? {
-              plan: "beginner",
-              amount: 0,
-              dailyReturn: 0,
-              accumulatedProfit: 0,
-              active: true,
-              startDate: new Date().toISOString(),
-            }
-          : {
-              coin: "USDT-TRC20",
-              amount: 0,
-              status: "pending",
-              date: new Date().toISOString(),
-            },
-      ],
-    }));
-  }
+    setForm((p: any) => {
+      let newItem;
 
-  // function removeArrayItem(key: string, index: number) {
-  //   setForm((p: any) => {
-  //     // This creates a deep clone of p to avoid mutating state directly.
-  //     const copy = JSON.parse(JSON.stringify(p));
-  //     copy[key].splice(index, 1);
-  //     return copy;
-  //   });
-  // }
+      if (key === "investments") {
+        newItem = {
+          plan: "beginner",
+          amount: 0,
+          dailyReturn: 0,
+          accumulatedProfit: 0,
+          active: true,
+          startDate: new Date().toISOString(),
+        };
+      }
+
+      if (key === "deposits") {
+        newItem = {
+          coin: "USDT-TRC20",
+          amount: 0,
+          type: "MAIN", // ✅ ONLY deposits
+          status: "pending",
+          date: new Date().toISOString(),
+        };
+      }
+
+      if (key === "withdrawals") {
+        newItem = {
+          coin: "USDT-TRC20",
+          amount: 0,
+          status: "pending",
+          date: new Date().toISOString(),
+        };
+      }
+
+      return {
+        ...p,
+        [key]: [...(p[key] || []), newItem],
+      };
+    });
+  }
 
   function removeArrayItem(key: string, index: number) {
     setForm((p: any) => ({
@@ -216,14 +226,6 @@ export default function AdminUsersPage() {
     await fetchUsers();
     loadUser("new");
   }
-
-  // async function approveDeposit(d) {
-  //   fetch("/api/admin/deposits/approve", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ userId: selectedId, depositId: d._id }),
-  //   });
-  // }
 
   const approveDeposit = async (deposit: any) => {
     setApprovingId(deposit._id);
@@ -501,6 +503,27 @@ export default function AdminUsersPage() {
             />
           </Row>
 
+          {/* Gas Balance */}
+          <Row>
+            <Label>Gas Balance</Label>
+            <Input
+              type="number"
+              value={form.gasBalance || ""}
+              onChange={(e) =>
+                updateField("gasBalance", Number(e.target.value))
+              }
+            />
+          </Row>
+
+          <Row>
+            <Label>Gas Flag</Label>
+            <Checkbox
+              type="checkbox"
+              checked={form.gasFlag ?? false}
+              onChange={(e) => updateField("gasFlag", e.target.checked)}
+            />
+          </Row>
+
           <Row>
             <Label>Total Deposit</Label>
             <Input
@@ -661,16 +684,6 @@ export default function AdminUsersPage() {
               </Row>
               <Row>
                 <Label>Status</Label>
-                {/* <SelectSmall
-                  value={d.status || "pending"}
-                  onChange={(e) =>
-                    updateField(`deposits.${idx}.status`, e.target.value)
-                  }
-                >
-                  <option value="pending">pending</option>
-                  <option value="approved">approved</option>
-                  <option value="rejected">rejected</option>
-                </SelectSmall> */}
                 <Input
                   style={{ width: "auto" }}
                   value={d.status || "pending"}
@@ -693,6 +706,19 @@ export default function AdminUsersPage() {
                 <SmallBtn onClick={() => removeArrayItem("deposits", idx)}>
                   Remove
                 </SmallBtn>
+              </Row>
+
+              <Row>
+                <Label>Type</Label>
+                <SelectSmall
+                  value={d.type || "MAIN"}
+                  onChange={(e) =>
+                    updateField(`deposits.${idx}.type`, e.target.value)
+                  }
+                >
+                  <option value="MAIN">MAIN</option>
+                  <option value="GAS">GAS</option>
+                </SelectSmall>
               </Row>
             </ArrayCard>
           ))}
@@ -909,6 +935,11 @@ const Input = styled.input`
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
+`;
+const Checkbox = styled.input`
+  width: auto;
+  transform: scale(1.4);
+  cursor: pointer;
 `;
 const Row = styled.div`
   display: flex;

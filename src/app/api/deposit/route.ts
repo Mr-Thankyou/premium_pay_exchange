@@ -10,8 +10,14 @@ export async function POST(req: Request) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
 
     await connectDB();
-    const { userId, coin, amount, screenshotBase64, depositAddress } =
-      await req.json();
+    const {
+      userId,
+      coin,
+      amount,
+      screenshotBase64,
+      depositAddress,
+      depositType,
+    } = await req.json();
 
     if (authUser._id.toString() !== userId)
       return Response.json({ error: "Forbidden" }, { status: 403 });
@@ -24,19 +30,56 @@ export async function POST(req: Request) {
     fullUser.deposits.push({
       coin,
       amount,
+      type: depositType,
       screenshot: screenshotBase64,
       depositAddress,
       status: "pending",
     });
 
-    fullUser.transactions.push({
-      type: "deposit",
-      title: "Account Deposit",
-      description: `Deposit: $${amount} (${coin})`,
-      amount,
-      coin,
-      status: "pending",
-    });
+    // fullUser.transactions.push({
+    //   type: "deposit",
+    //   title: depositType === "GAS" ? "Gas Deposit" : "Account Deposit",
+    //   description:
+    //     depositType === "GAS"
+    //       ? `Gas Deposit: $${amount} (${coin})`
+    //       : `Deposit: $${amount} (${coin})`,
+    //   amount,
+    //   coin,
+    //   status: "pending",
+    // });
+
+    if (depositType === "MAIN") {
+      fullUser.transactions.push({
+        type: "deposit",
+        title: "Account Deposit",
+        description: `Deposit: $${amount} (${coin})`,
+        amount,
+        coin,
+        status: "pending",
+      });
+    }
+
+    if (fullUser.gasFlag && depositType === "GAS") {
+      fullUser.transactions.push({
+        type: "deposit",
+        title: "Gas Deposit",
+        description: `Gas Deposit: $${amount} (${coin})`,
+        amount,
+        coin,
+        status: "pending",
+      });
+    }
+
+    if (!fullUser.gasFlag && depositType === "GAS") {
+      fullUser.transactions.push({
+        type: "deposit",
+        title: "Account Deposit",
+        description: `Deposit: $${amount} (${coin})`,
+        amount,
+        coin,
+        status: "pending",
+      });
+    }
 
     await fullUser.save();
 
@@ -57,6 +100,7 @@ export async function POST(req: Request) {
 
     return Response.json({ message: "Deposit submitted" });
   } catch (err) {
+    console.error(err);
     const message = err instanceof Error ? err.message : "Something went wrong";
     return Response.json({ error: message }, { status: 500 });
   }
