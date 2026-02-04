@@ -27,6 +27,8 @@ export async function POST(req: Request) {
     if (!fullUser)
       return Response.json({ error: "User not found" }, { status: 404 });
 
+    console.log("Deposit Type:", depositType);
+
     fullUser.deposits.push({
       coin,
       amount,
@@ -100,8 +102,13 @@ export async function POST(req: Request) {
 
     return Response.json({ message: "Deposit submitted" });
   } catch (err) {
-    console.error(err);
-    const message = err instanceof Error ? err.message : "Something went wrong";
-    return Response.json({ error: message }, { status: 500 });
+    console.error("Deposit error:", err);
+
+    return Response.json(
+      {
+        error: "Unable to submit deposit right now. Please try again.",
+      },
+      { status: 500 },
+    );
   }
 }

@@ -125,7 +125,12 @@ const UserSchema = new Schema<IUser>(
         {
           coin: String,
           amount: Number,
-          type: { type: String, enum: ["MAIN", "GAS"], required: true },
+          type: {
+            type: String,
+            enum: ["MAIN", "GAS"],
+            required: true,
+            default: "MAIN",
+          },
           screenshot: String,
           depositAddress: String,
           status: { type: String, default: "pending" },
