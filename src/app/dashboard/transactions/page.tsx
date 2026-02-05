@@ -56,6 +56,14 @@ export default function TransactionHistoryPage() {
     return false;
   }
 
+  const formatMoney = (amount: number, currency = "USD") =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+
   return (
     <Wrapper>
       <Header>
@@ -89,7 +97,8 @@ export default function TransactionHistoryPage() {
 
                 <Right>
                   <Amount $negative={isNegativeTransaction(tx)}>
-                    {isNegativeTransaction(tx) ? "-" : "+"}${tx.amount}
+                    {isNegativeTransaction(tx) ? "-" : "+"}
+                    {formatMoney(tx.amount)}
                   </Amount>
                   <Status status={tx.status}>{tx.status}</Status>
                 </Right>

@@ -85,7 +85,9 @@ export default function DashboardLayoutUI({
 
   //sidebar mobile scroll lock - sidebar open, body cannot scroll
   useEffect(() => {
-    if (!collapsed) {
+    const isMobile = window.innerWidth <= 750;
+
+    if (isMobile && !collapsed) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
