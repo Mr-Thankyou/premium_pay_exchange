@@ -268,11 +268,14 @@ const Sidebar = styled.aside<{ $collapsed: boolean }>`
   margin-left: 50px;
 
   @media (max-width: 750px) {
-    display: block;
+    /* display: block; */
+    display: flex;
+    flex-direction: column;
     position: fixed;
     z-index: 2000;
-    height: 100vh;
+    height: 100dvh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* Internet Explorer 10+ */
     background: #1e2128;
@@ -286,7 +289,7 @@ const Sidebar = styled.aside<{ $collapsed: boolean }>`
 
   svg {
     @media (max-width: 500px) {
-      width: 60px;
+      width: 70px;
     }
   }
 `;
@@ -304,10 +307,13 @@ const Overlay = styled.div<{ $show: boolean }>`
 `;
 
 const SideProfile = styled.div`
-  /* margin: 20px 0; */
   margin-top: 80px;
   text-align: center;
-  /* color: white; */
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  padding-bottom: 20px;
 
   .online {
     color: #327534;
@@ -316,7 +322,7 @@ const SideProfile = styled.div`
   }
 
   @media screen and (max-width: 600px) {
-    margin-top: 40px;
+    margin-top: 20px;
   }
 `;
 
@@ -510,7 +516,6 @@ const UserDropdown = styled.div`
 
 const ContentWrapper = styled.div`
   flex: 1;
-  overflow: hidden;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
