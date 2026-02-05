@@ -83,6 +83,19 @@ export default function DashboardLayoutUI({
     return () => document.removeEventListener("click", close);
   }, []);
 
+  //sidebar mobile scroll lock - sidebar open, body cannot scroll
+  useEffect(() => {
+    if (!collapsed) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [collapsed]);
+
   return (
     <Wrapper>
       <Container>
@@ -273,7 +286,7 @@ const Sidebar = styled.aside<{ $collapsed: boolean }>`
 
   svg {
     @media (max-width: 500px) {
-      width: 25px;
+      width: 60px;
     }
   }
 `;
@@ -300,6 +313,10 @@ const SideProfile = styled.div`
     color: #327534;
     font-weight: bold;
     font-size: 13.5px;
+  }
+
+  @media screen and (max-width: 600px) {
+    margin-top: 40px;
   }
 `;
 
@@ -360,6 +377,10 @@ const Links = styled.div`
 
   @media (max-width: 500px) {
     gap: 10px;
+  }
+
+  @media (max-width: 500px) {
+    margin-bottom: 50px;
   }
 `;
 
