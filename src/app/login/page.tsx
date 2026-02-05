@@ -120,7 +120,7 @@ export default function LoginPage() {
 //
 
 const Wrapper = styled.div`
-  min-height: 100vh;
+  min-height: 100dvh;
   background: #000;
   display: flex;
   justify-content: center;

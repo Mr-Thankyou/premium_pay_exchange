@@ -108,7 +108,7 @@ export default function DashboardLayoutUI({
             {user?.profileImage ? (
               <ProfileImage src={user.profileImage} alt="Profile Image" />
             ) : (
-              <FaUserCircle size={90} color="#fff" />
+              <ProfileIcon />
             )}
             <User>{user?.fullname || "Loading...."} </User>
             <p className="online">online</p>
@@ -286,12 +286,6 @@ const Sidebar = styled.aside<{ $collapsed: boolean }>`
     transition: transform 0.3s ease-in-out;
     transform: ${(p) => (p.$collapsed ? "translateX(-100%)" : "translateX(0)")};
   }
-
-  svg {
-    @media (max-width: 500px) {
-      width: 70px;
-    }
-  }
 `;
 
 const Overlay = styled.div<{ $show: boolean }>`
@@ -323,6 +317,17 @@ const SideProfile = styled.div`
 
   @media screen and (max-width: 600px) {
     margin-top: 20px;
+  }
+`;
+
+const ProfileIcon = styled(FaUserCircle)`
+  width: 90px;
+  height: 90px;
+  color: #fff;
+
+  @media (max-width: 500px) {
+    width: 70px;
+    height: 70px;
   }
 `;
 
