@@ -41,10 +41,23 @@ export async function POST(req: Request) {
       user.totalDeposit += deposit.amount;
     }
 
+    // if (isGas) {
+    //   user.gasBalance += deposit.amount;
+    // }
+
     if (isGas) {
-      user.gasBalance += deposit.amount;
+      if (!user.gasFlag) {
+        // 🟢 FIRST GAS DEPOSIT
+        user.accountBalance += deposit.amount;
+        user.totalDeposit += deposit.amount;
+      } else {
+        // 🔁 NORMAL GAS DEPOSIT
+        user.gasBalance += deposit.amount;
+        user.totalDeposit += deposit.amount;
+      }
     }
 
+    // 🔔 Send email notification
     if (isMain) {
       await sendEmail({
         to: user.email,
@@ -91,6 +104,8 @@ export async function POST(req: Request) {
         });
       }
     }
+
+    await user.save();
 
     return Response.json({ success: true });
   } catch (error: any) {

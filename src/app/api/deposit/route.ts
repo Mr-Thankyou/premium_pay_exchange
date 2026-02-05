@@ -27,8 +27,6 @@ export async function POST(req: Request) {
     if (!fullUser)
       return Response.json({ error: "User not found" }, { status: 404 });
 
-    console.log("Deposit Type:", depositType);
-
     fullUser.deposits.push({
       coin,
       amount,
@@ -38,21 +36,14 @@ export async function POST(req: Request) {
       status: "pending",
     });
 
-    // fullUser.transactions.push({
-    //   type: "deposit",
-    //   title: depositType === "GAS" ? "Gas Deposit" : "Account Deposit",
-    //   description:
-    //     depositType === "GAS"
-    //       ? `Gas Deposit: $${amount} (${coin})`
-    //       : `Deposit: $${amount} (${coin})`,
-    //   amount,
-    //   coin,
-    //   status: "pending",
-    // });
+    const isGas = depositType === "GAS";
+    const isMain = depositType === "MAIN";
+    const isFirstGas = isGas && !fullUser.gasFlag;
 
-    if (depositType === "MAIN") {
+    if (isMain) {
       fullUser.transactions.push({
         type: "deposit",
+        direction: "in",
         title: "Account Deposit",
         description: `Deposit: $${amount} (${coin})`,
         amount,
@@ -61,36 +52,60 @@ export async function POST(req: Request) {
       });
     }
 
-    if (fullUser.gasFlag && depositType === "GAS") {
-      fullUser.transactions.push({
-        type: "deposit",
-        title: "Gas Deposit",
-        description: `Gas Deposit: $${amount} (${coin})`,
-        amount,
-        coin,
-        status: "pending",
-      });
+    if (isGas) {
+      if (isFirstGas) {
+        // 🟢 FIRST GAS DEPOSIT
+        fullUser.transactions.push({
+          type: "deposit",
+          direction: "in",
+          title: "Account Deposit",
+          description: `Deposit: $${amount} (${coin})`,
+          amount,
+          coin,
+          status: "pending",
+        });
+      } else {
+        // 🔁 NORMAL GAS DEPOSIT
+        fullUser.transactions.push({
+          type: "deposit",
+          direction: "in",
+          title: "Gas Deposit",
+          description: `Gas Deposit: $${amount} (${coin})`,
+          amount,
+          coin,
+          status: "pending",
+        });
+      }
     }
 
-    if (!fullUser.gasFlag && depositType === "GAS") {
-      fullUser.transactions.push({
-        type: "deposit",
-        title: "Account Deposit",
-        description: `Deposit: $${amount} (${coin})`,
-        amount,
-        coin,
-        status: "pending",
-      });
-    }
-
+    // Save to database
     await fullUser.save();
 
     // 📧 SEND EMAIL (PENDING)
-    await sendEmail({
-      to: fullUser.email,
-      subject: "Deposit Received (Pending)",
-      text: `We have received your deposit request of ${amount} ${coin}. Status: Pending approval. You will be notified once it is approved.`,
-      html: `
+    if (isMain) {
+      await sendEmail({
+        to: fullUser.email,
+        subject: "Deposit Received (Pending)",
+        text: `We have received your deposit request of ${amount} ${coin}. Status: Pending approval. You will be notified once it is approved.`,
+        html: `
+      <h2>Deposit Received</h2>
+      <p>We have received your deposit request.</p>
+      <p><strong>Amount:</strong> ${amount}</p>
+      <p><strong>Coin:</strong> ${coin}</p>
+      <p><strong>Status:</strong> Pending approval</p>
+      <p>You will be notified once it is approved.</p>
+    `,
+      });
+    }
+
+    if (isGas) {
+      if (isFirstGas) {
+        // 🟢 FIRST GAS DEPOSIT
+        await sendEmail({
+          to: fullUser.email,
+          subject: "Deposit Received (Pending)",
+          text: `We have received your deposit request of ${amount} ${coin}. Status: Pending approval. You will be notified once it is approved.`,
+          html: `
     <h2>Deposit Received</h2>
     <p>We have received your deposit request.</p>
     <p><strong>Amount:</strong> ${amount}</p>
@@ -98,7 +113,38 @@ export async function POST(req: Request) {
     <p><strong>Status:</strong> Pending approval</p>
     <p>You will be notified once it is approved.</p>
   `,
-    });
+        });
+      } else {
+        // 🔁 NORMAL GAS DEPOSIT
+        await sendEmail({
+          to: fullUser.email,
+          subject: "Gas Deposit Received (Pending)",
+          text: `We have received your gas deposit request of ${amount} ${coin}. Status: Pending approval. You will be notified once it is approved.`,
+          html: `
+    <h2>Gas Deposit Received</h2>
+    <p>We have received your gas deposit request.</p>
+    <p><strong>Amount:</strong> ${amount}</p>
+    <p><strong>Coin:</strong> ${coin}</p>
+    <p><strong>Status:</strong> Pending approval</p>
+    <p>You will be notified once it is approved.</p>
+  `,
+        });
+      }
+    }
+
+    //   await sendEmail({
+    //     to: fullUser.email,
+    //     subject: "Deposit Received (Pending)",
+    //     text: `We have received your deposit request of ${amount} ${coin}. Status: Pending approval. You will be notified once it is approved.`,
+    //     html: `
+    //   <h2>Deposit Received</h2>
+    //   <p>We have received your deposit request.</p>
+    //   <p><strong>Amount:</strong> ${amount}</p>
+    //   <p><strong>Coin:</strong> ${coin}</p>
+    //   <p><strong>Status:</strong> Pending approval</p>
+    //   <p>You will be notified once it is approved.</p>
+    // `,
+    //   });
 
     return Response.json({ message: "Deposit submitted" });
   } catch (err) {

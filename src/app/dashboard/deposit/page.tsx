@@ -61,7 +61,7 @@ export default function DepositPage() {
 
     if (!res.ok) return toast.error(j.error || "Error");
 
-    toast.success("Deposit submitted. Waiting approval.");
+    toast.success("Deposit submitted. Waiting approval.", { duration: 4000 });
     setAmount("");
     setScreenshot("");
   };

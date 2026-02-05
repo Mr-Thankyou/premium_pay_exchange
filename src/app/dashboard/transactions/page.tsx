@@ -1,6 +1,6 @@
 "use client";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
 import styled from "styled-components";
 import {
@@ -9,6 +9,8 @@ import {
   FaChartLine,
   FaExchangeAlt,
 } from "react-icons/fa";
+import { useEffect } from "react";
+import { updateUser } from "@/lib/store/userSlice";
 
 interface Transaction {
   type:
@@ -30,7 +32,20 @@ interface Transaction {
 
 // ==================== 🌤️Main Component ====================
 export default function TransactionHistoryPage() {
+  const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const res = await fetch("/api/me");
+      if (!res.ok) return;
+      const freshUser = await res.json();
+      // dispatch(updateUser(freshUser));
+      dispatch(updateUser(freshUser.user));
+    };
+
+    fetchUser();
+  }, [dispatch]);
 
   const transactions = user?.transactions || [];
 
@@ -73,7 +88,7 @@ export default function TransactionHistoryPage() {
                 </Left>
 
                 <Right>
-                  <Amount negative={isNegativeTransaction(tx)}>
+                  <Amount $negative={isNegativeTransaction(tx)}>
                     {isNegativeTransaction(tx) ? "-" : "+"}${tx.amount}
                   </Amount>
                   <Status status={tx.status}>{tx.status}</Status>
@@ -188,10 +203,10 @@ const Right = styled.div`
   }
 `;
 
-const Amount = styled.div<{ negative: boolean }>`
+const Amount = styled.div<{ $negative: boolean }>`
   font-weight: bold;
   font-size: 16px;
-  color: ${({ negative }) => (negative ? "#ff6b6b" : "#4caf50")};
+  color: ${({ $negative }) => ($negative ? "#ff6b6b" : "#4caf50")};
 `;
 
 const Status = styled.div<{ status: string }>`

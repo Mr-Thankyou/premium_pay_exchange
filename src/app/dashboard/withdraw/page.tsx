@@ -98,6 +98,7 @@ export default function WithdrawPage() {
             <option>USDT-TRC20</option>
             <option>BTC</option>
             <option>ETH</option>
+            <option>PPE</option>
           </Select>
         </Section>
 

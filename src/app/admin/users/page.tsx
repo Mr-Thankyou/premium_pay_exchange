@@ -972,6 +972,7 @@ const SmallBtn = styled.button`
 const SectionTitle = styled.h4`
   margin-top: 12px;
   margin-bottom: 8px;
+  color: #ff8f1f;
 `;
 const ArrayCard = styled.div`
   border: 1px solid #eee;

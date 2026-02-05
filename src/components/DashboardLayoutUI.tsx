@@ -108,20 +108,18 @@ export default function DashboardLayoutUI({
                 }}
               >
                 <FaCoins /> $
-                {user?.accountBalance.toLocaleString("en-US", {
+                {(user?.accountBalance ?? 0).toLocaleString("en-US", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-                {user?.gasBalance && user.gasBalance > 0 ? (
+                {(user?.gasBalance ?? 0) > 0 && (
                   <GasBalance>
                     GAS: $
-                    {user.gasBalance.toLocaleString("en-US", {
+                    {(user?.gasBalance ?? 0).toLocaleString("en-US", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
                   </GasBalance>
-                ) : (
-                  ""
                 )}
               </p>
               <p>
