@@ -20,9 +20,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
     // rules (per your spec in USD)
-    if (num < 60000 || num > 200000) {
+    if (num < 10000 || num > 500000) {
       return NextResponse.json(
-        { error: "Amount must be between 60,000 and 200,000" },
+        { error: "Amount must be between 10,000 and 500,000" },
         { status: 400 },
       );
     }
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     }
 
     // deduct immediately (pending payout)
-    user.accountBalance = (user.accountBalance || 0) - num;
+    // user.accountBalance = (user.accountBalance || 0) - num;
     // user.totalWithdrawal = (user.totalWithdrawal || 0) + num;
     user.withdrawals = user.withdrawals || [];
     user.withdrawals.push({
@@ -51,6 +51,7 @@ export async function POST(req: Request) {
 
     user.transactions.push({
       type: "withdrawal",
+      direction: "out",
       title: "Account Withdrawal",
       description: `Withdrawal: $${amount} (${coin})`,
       amount,

@@ -24,7 +24,15 @@ export default function WithdrawPage() {
   const MAX_WITHDRAW = 500000;
 
   const amt = Number(amount || 0);
-  const gasFee = amt >= MIN_WITHDRAW ? Math.ceil(amt * GAS_PERCENT) : 0;
+
+  const isPPEAddress = (addr: string) => addr.startsWith("ppe_");
+  const isInternalPPETransfer =
+    coin === "PPE" && isPPEAddress(address) && address !== user?.walletAddress;
+
+  const gasFee =
+    isInternalPPETransfer || amt < MIN_WITHDRAW
+      ? 0
+      : Math.ceil(amt * GAS_PERCENT);
 
   const submit = async () => {
     const amt = Number(amount);
@@ -45,31 +53,68 @@ export default function WithdrawPage() {
       return toast.error("Please enter a destination wallet address.");
     }
 
-    const confirm = window.confirm(
-      `Withdrawal requires a gas fee.\n\n` +
-        `Withdrawal Amount: $${amt.toLocaleString()}\n` +
-        `Gas Fee (5%): $${gasFee.toLocaleString()}\n\n` +
-        `Please deposit the gas fee under "Gas Deposit".\n` +
-        `Withdrawal will be approved once gas is confirmed.\n\n` +
-        `Proceed?`,
-    );
+    // 🚫 Prevent withdrawing to own PPE address
+    if (coin === "PPE" && address === user?.walletAddress) {
+      return toast.error(
+        "You cannot withdraw to your own PPE address. Please enter a different wallet address.",
+        { duration: 6000 },
+      );
+    }
 
-    if (!confirm) return;
+    try {
+      // ✅ Internal PPE transfer (no gas)
+      if (isInternalPPETransfer) {
+        // toast(
+        //   "Internal PPE transfer detected. No gas fee is required for transfers within Premium Pay Exchange.",
+        //   {
+        //     id: toastId,
+        //     icon: "ℹ️",
+        //     duration: 4000,
+        //   },
+        // );
 
-    const res = await fetch("/api/withdraw", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ coin, amount: amt, address }),
-    });
+        const confirm = window.confirm(
+          `Internal PPE transfer detected.\n` +
+            `No gas fee is required for transfers within Premium Pay Exchange.\n\n` +
+            `Click Ok to continue`,
+        );
 
-    const j = await res.json();
-    if (!res.ok) return toast.error(j.error || "Error");
+        if (!confirm) return;
+      } else {
+        const confirm = window.confirm(
+          `Withdrawal requires a gas fee.\n\n` +
+            `Withdrawal Amount: $${amt.toLocaleString()}\n` +
+            `Gas Fee (5%): $${gasFee.toLocaleString()}\n\n` +
+            `Please deposit the gas fee under "Gas Deposit".\n` +
+            `Withdrawal will be approved once gas is confirmed.\n\n` +
+            `Proceed?`,
+        );
 
-    toast.success("Withdrawal request submitted (pending approval).", {
-      duration: 6000,
-    });
-    setAmount("");
-    setAddress("");
+        if (!confirm) return;
+      }
+
+      // 🟡 Create a SINGLE toast (info/loading)
+      const toastId = toast.loading("Processing withdrawal...");
+
+      const res = await fetch("/api/withdraw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ coin, amount: amt, address }),
+      });
+
+      const j = await res.json();
+      if (!res.ok) return toast.error(j.error || "Error");
+
+      // ✅ Final success update
+      toast.success("Withdrawal request submitted (pending approval).", {
+        id: toastId,
+        duration: 5000,
+      });
+      setAmount("");
+      setAddress("");
+    } catch (err) {
+      toast.error("Something went wrong. Please try again.", { id: toastId });
+    }
   };
 
   return (
@@ -111,9 +156,13 @@ export default function WithdrawPage() {
             placeholder="Enter amount"
             onChange={(e) => setAmount(e.target.value)}
           />
-          {amt >= MIN_WITHDRAW && (
+          {amt >= MIN_WITHDRAW && address && (
             <GasInfo>
-              <span>Gas Fee (5%)</span>
+              <span>
+                {isInternalPPETransfer
+                  ? "Gas Fee (Not Required)"
+                  : "Gas Fee (5%)"}
+              </span>
               <b>${gasFee.toLocaleString()}</b>
             </GasInfo>
           )}

@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     if (!user) {
       return Response.json(
         { success: false, message: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -19,20 +19,20 @@ export async function POST(req: Request) {
     if (!withdrawal) {
       return Response.json(
         { success: false, message: "Withdrawal not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (withdrawal.status === "rejected") {
       return Response.json(
         { success: false, message: "Withdrawal already rejected" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // ✅ Update values
     withdrawal.status = "rejected";
-    user.accountBalance += withdrawal.amount;
+    // user.accountBalance += withdrawal.amount;
     // user.totalWithdrawal -= withdrawal.amount;
 
     await user.save();
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         success: false,
         message: error.message || "Something went wrong",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
