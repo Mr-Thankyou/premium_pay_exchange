@@ -142,7 +142,7 @@ export default function DashboardLayoutUI({
                 with ease!!
               </p>
               <Link href="https://www.moonpay.com/buy" target="_blank">
-                <button>BUY BTC HERE</button>
+                <button>BUY CRYPTO HERE</button>
               </Link>
             </BuyBTCBox>
             <Links>
