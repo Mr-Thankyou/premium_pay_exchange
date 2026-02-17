@@ -19,7 +19,7 @@ export default function WithdrawPage() {
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
 
-  const GAS_PERCENT = 0.05;
+  const GAS_PERCENT = 0.01;
   const MIN_WITHDRAW = 10000;
   const MAX_WITHDRAW = 500000;
 
@@ -84,7 +84,7 @@ export default function WithdrawPage() {
         const confirm = window.confirm(
           `Withdrawal requires a gas fee.\n\n` +
             `Withdrawal Amount: $${amt.toLocaleString()}\n` +
-            `Gas Fee (5%): $${gasFee.toLocaleString()}\n\n` +
+            `Gas Fee (1%): $${gasFee.toLocaleString()}\n\n` +
             `Please deposit the gas fee under "Gas Deposit".\n` +
             `Withdrawal will be approved once gas is confirmed.\n\n` +
             `Proceed?`,
@@ -161,7 +161,7 @@ export default function WithdrawPage() {
               <span>
                 {isInternalPPETransfer
                   ? "Gas Fee (Not Required)"
-                  : "Gas Fee (5%)"}
+                  : "Gas Fee (1%)"}
               </span>
               <b>${gasFee.toLocaleString()}</b>
             </GasInfo>

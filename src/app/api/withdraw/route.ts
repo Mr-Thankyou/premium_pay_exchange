@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       date: new Date(),
     });
 
-    const GAS_PERCENT = 0.05;
+    const GAS_PERCENT = 0.01;
     const gasFee = Math.ceil(num * GAS_PERCENT);
 
     user.transactions.push({
