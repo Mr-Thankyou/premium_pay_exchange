@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import styled from "styled-components";
+import formatDate from "@/utils/formatDate";
 
 /**
  * Single page admin user editor:
@@ -558,11 +559,17 @@ export default function AdminUsersPage() {
           </Row>
 
           {/* Transactions history: Nested Arrays  */}
-          <SectionTitle>Transactions (History)</SectionTitle>
+          <SectionTitle>⭐Transactions (History)</SectionTitle>
           <SmallBtn onClick={addTransaction}>+ Add transaction</SmallBtn>
 
           {(form.transactions || []).map((tx: any, idx: number) => (
             <ArrayCard key={idx}>
+              <ItemNumber>#{idx + 1}</ItemNumber>
+              <Row>
+                <Label>Date</Label>
+                <Input value={formatDate(tx.date)} disabled />
+              </Row>
+
               <Row>
                 <Label>Type</Label>
                 <SelectSmall
@@ -649,6 +656,9 @@ export default function AdminUsersPage() {
                   <option value="rejected">rejected</option>
                 </SelectSmall>
 
+                <Label>Reference</Label>
+                <Input value={tx.reference || ""} disabled />
+
                 <SmallBtn onClick={() => removeArrayItem("transactions", idx)}>
                   Remove
                 </SmallBtn>
@@ -657,12 +667,17 @@ export default function AdminUsersPage() {
           ))}
 
           {/* Nested arrays */}
-          <SectionTitle>Deposits</SectionTitle>
+          <SectionTitle>⭐Deposits</SectionTitle>
           <SmallBtn onClick={() => addArrayItem("deposits")}>
             + Add deposit
           </SmallBtn>
           {(form.deposits || []).map((d: Deposit, idx: number) => (
             <ArrayCard key={idx}>
+              <ItemNumber>#{idx + 1}</ItemNumber>
+              <Row>
+                <Label>Date</Label>
+                <Input value={formatDate(d.date)} disabled />
+              </Row>
               <Row>
                 <Label>Coin</Label>
                 <Input
@@ -723,23 +738,28 @@ export default function AdminUsersPage() {
             </ArrayCard>
           ))}
 
-          <SectionTitle>Withdrawals</SectionTitle>
+          <SectionTitle>⭐Withdrawals</SectionTitle>
           <SmallBtn onClick={() => addArrayItem("withdrawals")}>
             + Add withdrawal
           </SmallBtn>
-          {(form.withdrawals || []).map((d: Withdrawal, idx: number) => (
+          {(form.withdrawals || []).map((w: Withdrawal, idx: number) => (
             <ArrayCard key={idx}>
+              <ItemNumber>#{idx + 1}</ItemNumber>
+              <Row>
+                <Label>Date</Label>
+                <Input value={formatDate(w.date)} disabled />
+              </Row>
               <Row>
                 <Label>Coin</Label>
                 <Input
-                  value={d.coin || ""}
+                  value={w.coin || ""}
                   onChange={(e) =>
                     updateField(`withdrawals.${idx}.coin`, e.target.value)
                   }
                 />
                 <Label>Amount</Label>
                 <Input
-                  value={d.amount || 0}
+                  value={w.amount || 0}
                   onChange={(e) =>
                     updateField(
                       `withdrawals.${idx}.amount`,
@@ -751,7 +771,7 @@ export default function AdminUsersPage() {
               <Row>
                 <Label>Address</Label>
                 <Input
-                  value={d.address || ""}
+                  value={w.address || ""}
                   onChange={(e) =>
                     updateField(`withdrawals.${idx}.address`, e.target.value)
                   }
@@ -769,22 +789,22 @@ export default function AdminUsersPage() {
                 </SelectSmall> */}
                 <Input
                   style={{ width: "auto" }}
-                  value={d.status || "pending"}
+                  value={w.status || "pending"}
                   disabled
                 />
                 <SmallBtn
                   style={{ background: "#4BBDA8" }}
-                  onClick={() => approveWithdraw(d)}
-                  disabled={approvingId === d._id}
+                  onClick={() => approveWithdraw(w)}
+                  disabled={approvingId === w._id}
                 >
-                  {approvingId === d._id ? "Approving..." : "Approve"}
+                  {approvingId === w._id ? "Approving..." : "Approve"}
                 </SmallBtn>
                 <SmallBtn
                   style={{ background: "#BD4B5C" }}
-                  onClick={() => rejectWithdraw(d)}
-                  disabled={rejectingId === d._id}
+                  onClick={() => rejectWithdraw(w)}
+                  disabled={rejectingId === w._id}
                 >
-                  {rejectingId === d._id ? "Rejecting..." : "Reject"}
+                  {rejectingId === w._id ? "Rejecting..." : "Reject"}
                 </SmallBtn>
                 <SmallBtn onClick={() => removeArrayItem("withdrawals", idx)}>
                   Remove
@@ -793,12 +813,13 @@ export default function AdminUsersPage() {
             </ArrayCard>
           ))}
 
-          <SectionTitle>Investments</SectionTitle>
+          <SectionTitle>⭐Investments</SectionTitle>
           <SmallBtn onClick={() => addArrayItem("investments")}>
             + Add investment
           </SmallBtn>
           {(form.investments || []).map((inv: Investment, idx: number) => (
             <ArrayCard key={idx}>
+              <ItemNumber>#{idx + 1}</ItemNumber>
               <Row>
                 <Label>Plan</Label>
                 <SelectSmall
@@ -970,9 +991,10 @@ const SmallBtn = styled.button`
   cursor: pointer;
 `;
 const SectionTitle = styled.h4`
-  margin-top: 12px;
+  margin-top: 40px;
   margin-bottom: 8px;
   color: #ff8f1f;
+  font-size: 20px;
 `;
 const ArrayCard = styled.div`
   border: 1px solid #eee;
@@ -980,4 +1002,11 @@ const ArrayCard = styled.div`
   border-radius: 8px;
   margin-bottom: 12px;
   background: #fbfbfb;
+`;
+
+const ItemNumber = styled.span`
+  color: orange;
+  margin-bottom: 10px;
+  font-weight: bold;
+  display: block;
 `;
