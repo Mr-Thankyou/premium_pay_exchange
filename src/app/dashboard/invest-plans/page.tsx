@@ -76,7 +76,11 @@ export default function InvestPage() {
     });
 
     const j = await res.json();
-    if (!res.ok) return toast.error(j.error || "Error");
+    if (!res.ok)
+      return toast.error(
+        `${j.error}, Try again later` || "An Error occurred try again later ",
+        { id: toastId },
+      );
     toast.success("Investment started successfully", { id: toastId });
     setAmount("");
   };

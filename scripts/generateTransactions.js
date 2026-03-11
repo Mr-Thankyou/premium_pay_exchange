@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 // --- CONFIGURATION ---
-// Go to Mongodb, find the particular user you want to update their transactions,
+// Go to Mongodb, find the particular user you want to update their transactions, and get their User_id
 const MONGODB_URI =
   "mongodb+srv://premium_pay_exchange:ajexUbcmag1sbWej@cluster0.r2zbijg.mongodb.net/?appName=Cluster0";
 const USER_ID = "69ad681a2c6524fb751cccb7";
@@ -69,6 +69,7 @@ async function generateRealisticHistory() {
         }
         user.transactions.push({
           type: "deposit",
+          direction: "in",
           title: "Account Deposit",
           description: `Deposit: $${amount.toLocaleString()} (USDT-TRC20)`,
           amount: amount,
@@ -88,6 +89,7 @@ async function generateRealisticHistory() {
         }
         user.transactions.push({
           type: "profit",
+          direction: "in",
           title: "Weekly Investment Profit",
           description: `$${amount.toLocaleString()} profit has been added to your account balance.`,
           amount: amount,
@@ -102,18 +104,21 @@ async function generateRealisticHistory() {
           amount = Math.floor(Math.random() * 10000000) + 500000;
           const plan = Math.random() > 0.5 ? "business" : "standard";
 
-          if (currentBalance >= amount && status === "approved") {
-            currentBalance -= amount;
-            activeInvestment = {
-              plan,
-              amount,
-              startDate: txDate,
-              active: true,
-            };
-            user.investments.push(activeInvestment);
+          // if (currentBalance >= amount && status === "approved") {
+          //   currentBalance -= amount;
+          //   activeInvestment = {
+          //     plan,
+          //     amount,
+          //     weeklyReturn: `${plan === "standard" ? "15" : "35"}`,
+          //     startDate: txDate,
+          //     accumulatedProfit: 0,
+          //     active: true,
+          //   };
+          //   user.investments.push(activeInvestment);
 
             user.transactions.push({
               type: "investment",
+              direction: "out",
               title: "Investment Initiated",
               description: `You invested $${amount.toLocaleString()} into the ${plan} plan`,
               amount: amount,
@@ -135,6 +140,7 @@ async function generateRealisticHistory() {
           gasBalance += gasNeeded;
           user.transactions.push({
             type: "deposit",
+            direction: "in",
             title: "Gas Deposit",
             description: `Gas Deposit: $${gasNeeded.toLocaleString()} (USDT-TRC20)`,
             amount: gasNeeded,
@@ -156,7 +162,7 @@ async function generateRealisticHistory() {
               : `Withdrawal: $${amount.toLocaleString()} (USDT-TRC20)`,
             amount: amount,
             coin: "USDT",
-            direction: isInternal ? "out" : undefined,
+            direction: "out",
             status: status,
             date: txDate,
           });
