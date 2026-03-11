@@ -46,19 +46,36 @@ export async function POST(req: Request) {
       date: new Date(),
     });
 
-    const GAS_PERCENT = 0.01;
+    const GAS_PERCENT = (user?.gasFeePercentage ?? 1) / 100;
     const gasFee = Math.ceil(num * GAS_PERCENT);
 
-    user.transactions.push({
-      type: "withdrawal",
-      direction: "out",
-      title: "Account Withdrawal",
-      description: `Withdrawal: $${amount} (${coin})`,
-      amount,
-      coin,
-      status: "pending",
-      reference: `GAS_REQUIRED_${gasFee}`,
-    });
+    function shortenAddress(address: string, startLength = 7, endLength = 4) {
+      return `${address.slice(0, startLength)}...........${address.slice(-endLength)}`;
+    }
+
+    if (coin === "PPE") {
+      user.transactions.push({
+        type: "transfer",
+        direction: "out",
+        title: "Wallet Transfer",
+        description: `Transfered to ${shortenAddress(address)}`,
+        amount,
+        coin,
+        status: "pending",
+        reference: `GAS_REQUIRED_${gasFee}`,
+      });
+    } else {
+      user.transactions.push({
+        type: "withdrawal",
+        direction: "out",
+        title: "Account Withdrawal",
+        description: `Withdrawal: $${amount} (${coin})`,
+        amount,
+        coin,
+        status: "pending",
+        reference: `GAS_REQUIRED_${gasFee}`,
+      });
+    }
 
     await user.save();
 

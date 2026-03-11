@@ -8,6 +8,7 @@ import {
   FaArrowUp,
   FaChartLine,
   FaExchangeAlt,
+  FaCoins,
 } from "react-icons/fa";
 import { useEffect } from "react";
 import { updateUser } from "@/lib/store/userSlice";
@@ -86,6 +87,7 @@ export default function TransactionHistoryPage() {
                     {tx.type === "withdrawal" && <FaArrowUp />}
                     {tx.type === "investment" && <FaChartLine />}
                     {tx.type === "transfer" && <FaExchangeAlt />}
+                    {tx.type === "profit" && <FaCoins />}
                   </Icon>
 
                   <Details>
@@ -182,7 +184,9 @@ const Icon = styled.div<{ type: string }>`
         ? "#8f1d1d"
         : type === "investment"
           ? "#1d4e8f"
-          : "#6f42c1"}; // transfer
+          : type === "profit"
+            ? "#B59410"
+            : "#6f42c1"}; // transfer
 `;
 
 const Details = styled.div``;

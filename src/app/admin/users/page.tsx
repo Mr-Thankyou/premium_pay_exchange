@@ -37,6 +37,8 @@ export default function AdminUsersPage() {
     walletAddress: "",
     accountBalance: 0,
     gasBalance: 0,
+    gasFlag: false,
+    gasFeePercentage: 1,
     totalProfit: 0,
     totalDeposit: 0,
     totalWithdrawal: 0,
@@ -78,6 +80,8 @@ export default function AdminUsersPage() {
         walletAddress: "",
         accountBalance: 0,
         gasBalance: 0,
+        gasFlag: false,
+        gasFeePercentage: 1,
         totalProfit: 0,
         totalDeposit: 0,
         totalWithdrawal: 0,
@@ -522,6 +526,17 @@ export default function AdminUsersPage() {
               type="checkbox"
               checked={form.gasFlag ?? false}
               onChange={(e) => updateField("gasFlag", e.target.checked)}
+            />
+          </Row>
+
+          <Row>
+            <Label>Gas Fee %</Label>
+            <Input
+              type="number"
+              value={form.gasFeePercentage || 0}
+              onChange={(e) =>
+                updateField("gasFeePercentage", Number(e.target.value))
+              }
             />
           </Row>
 

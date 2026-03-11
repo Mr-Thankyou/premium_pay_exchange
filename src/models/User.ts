@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, models } from "mongoose";
 export interface IInvestment {
   plan: "beginner" | "standard" | "business";
   amount: number;
-  dailyReturn: number; // %
+  weeklyReturn: number; // %
   startDate: Date;
   active: boolean;
   accumulatedProfit: number;
@@ -24,6 +24,7 @@ export interface IUser extends Document {
   profileImage?: string;
   gasBalance?: number;
   gasFlag: boolean;
+  gasFeePercentage?: number;
   resetToken?: string;
   resetTokenExpire?: number;
   createdAt: Date;
@@ -111,6 +112,7 @@ const UserSchema = new Schema<IUser>(
 
     gasBalance: { type: Number, default: 0 },
     gasFlag: { type: Boolean, default: false },
+    gasFeePercentage: { type: Number, default: 1 },
 
     // Balances
     accountBalance: { type: Number, default: 0 },
@@ -179,7 +181,7 @@ const UserSchema = new Schema<IUser>(
         {
           plan: { type: String, required: true },
           amount: { type: Number, required: true },
-          dailyReturn: { type: Number, required: true },
+          weeklyReturn: { type: Number, required: true },
           startDate: { type: Date, default: Date.now },
           active: { type: Boolean, default: true },
           accumulatedProfit: { type: Number, default: 0 },

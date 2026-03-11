@@ -16,7 +16,7 @@ const PLANS = [
   {
     id: "beginner",
     name: "Beginner Plan",
-    daily: 1.5,
+    weekly: 5,
     min: 500,
     max: 4000,
     description:
@@ -25,16 +25,16 @@ const PLANS = [
   {
     id: "standard",
     name: "Standard Plan",
-    daily: 3.5,
+    weekly: 15,
     min: 5000,
     max: 9000,
     description:
-      "A balanced investment plan offering higher daily returns for committed investors.",
+      "A balanced investment plan offering higher weekly returns for committed investors.",
   },
   {
     id: "business",
     name: "Business Plan",
-    daily: 7.5,
+    weekly: 35,
     min: 10000,
     max: Infinity,
     description:
@@ -50,8 +50,8 @@ export default function InvestPage() {
 
   const plan = useMemo(() => PLANS.find((p) => p.id === planId)!, [planId]);
 
-  // Calculate projected daily profit
-  const dailyProfit = amount ? (Number(amount) * plan.daily) / 100 : 0;
+  // Calculate projected weekly profit
+  const weeklyProfit = amount ? (Number(amount) * plan.weekly) / 100 : 0;
 
   const validateAndSubmit = async () => {
     const amt = Number(amount);
@@ -64,10 +64,11 @@ export default function InvestPage() {
       return toast.error(
         `Maximum investment for this plan is ${
           plan.max === Infinity ? "unlimited" : "$" + plan.max
-        }`
+        }`,
       );
     }
 
+    const toastId = toast.loading("Processing your investment...");
     const res = await fetch("/api/invest", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -76,7 +77,7 @@ export default function InvestPage() {
 
     const j = await res.json();
     if (!res.ok) return toast.error(j.error || "Error");
-    toast.success("Investment started successfully");
+    toast.success("Investment started successfully", { id: toastId });
     setAmount("");
   };
 
@@ -91,7 +92,7 @@ export default function InvestPage() {
           <Select value={planId} onChange={(e) => setPlanId(e.target.value)}>
             {PLANS.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.name} ({p.daily}% daily)
+                {p.name} ({p.weekly}% weekly)
               </option>
             ))}
           </Select>
@@ -103,8 +104,8 @@ export default function InvestPage() {
           <p>{plan.description}</p>
 
           <DetailRow>
-            <span>Daily Return:</span>
-            <strong>{plan.daily}%</strong>
+            <span>Weekly Return:</span>
+            <strong>{plan.weekly}%</strong>
           </DetailRow>
 
           <DetailRow>
@@ -137,8 +138,8 @@ export default function InvestPage() {
         {amount && (
           <ProfitBox>
             <p>
-              Estimated <strong>Daily Profit:</strong>{" "}
-              <span>${dailyProfit.toFixed(2)}</span>
+              Estimated <strong>Weekly Profit:</strong>{" "}
+              <span>${weeklyProfit.toFixed(2)}</span>
             </p>
           </ProfitBox>
         )}

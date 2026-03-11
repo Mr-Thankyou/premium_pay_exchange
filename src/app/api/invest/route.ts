@@ -4,9 +4,9 @@ import User from "@/models/User";
 import { getCurrentUserFull } from "@/lib/auth";
 
 const PLANS: Record<string, { min: number; max: number; pct: number }> = {
-  beginner: { min: 500, max: 4000, pct: 1.5 },
-  standard: { min: 5000, max: 9000, pct: 3.5 },
-  business: { min: 10000, max: Number.POSITIVE_INFINITY, pct: 7.5 },
+  beginner: { min: 500, max: 4000, pct: 5 },
+  standard: { min: 5000, max: 9000, pct: 15 },
+  business: { min: 10000, max: Number.POSITIVE_INFINITY, pct: 35 },
 };
 
 export async function POST(req: Request) {
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     u.investments.push({
       plan,
       amount: num,
-      dailyReturn: p.pct,
+      weeklyReturn: p.pct,
       startDate: new Date(),
       active: true,
       accumulatedProfit: 0,
@@ -55,6 +55,7 @@ export async function POST(req: Request) {
 
     u.transactions.push({
       type: "investment",
+      direction: "out",
       title: "Investment Initiated",
       description: `You invested $${num} into the ${plan} plan`,
       amount: num,

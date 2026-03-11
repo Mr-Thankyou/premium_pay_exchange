@@ -30,6 +30,6 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "src/components/ParticlesBackground.js"
-  ],
+, "scripts/generateTransactions.js"  ],
   "exclude": ["node_modules"]
 }

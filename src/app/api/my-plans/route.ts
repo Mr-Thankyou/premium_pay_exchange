@@ -28,22 +28,28 @@ export async function GET() {
     const activePlans = user.investments.filter((inv) => inv.active);
 
     // 5. (Optional) Calculate live profit based on days passed
-    const enrichedPlans = activePlans.map((inv) => {
-      const daysPassed =
-        (Date.now() - new Date(inv.startDate).getTime()) /
-        (1000 * 60 * 60 * 24);
+    const activePlansWithLiveProfit = activePlans
+      .map((inv) => {
+        const daysPassed = Math.floor(
+          (Date.now() - new Date(inv.startDate).getTime()) /
+            (1000 * 60 * 60 * 24),
+        );
 
-      const liveProfit =
-        inv.amount * (inv.dailyReturn / 100) * Math.floor(daysPassed);
+        // const liveProfit =
+        //   inv.amount * (inv.weeklyReturn / 100) * Math.floor(daysPassed);
 
-      return {
-        ...inv.toObject(),
-        liveProfit: Number(liveProfit.toFixed(2)),
-      };
-    });
+        const liveProfit =
+          inv.amount * (inv.weeklyReturn / 100) * (daysPassed / 7);
+
+        return {
+          ...inv.toObject(),
+          liveProfit: Number(liveProfit.toFixed(2)),
+        };
+      })
+      .reverse();
 
     return NextResponse.json({
-      plans: enrichedPlans,
+      plans: activePlansWithLiveProfit,
     });
   } catch (err: any) {
     console.error("my-plans error:", err);

@@ -18,8 +18,9 @@ export default function WithdrawPage() {
   const [coin, setCoin] = useState("USDT-TRC20");
   const [address, setAddress] = useState("");
   const [amount, setAmount] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const GAS_PERCENT = 0.01;
+  const GAS_PERCENT = (user?.gasFeePercentage ?? 1) / 100;
   const MIN_WITHDRAW = 10000;
   const MAX_WITHDRAW = 500000;
 
@@ -34,7 +35,10 @@ export default function WithdrawPage() {
       ? 0
       : Math.ceil(amt * GAS_PERCENT);
 
+  // SUMBIT BUTTON
   const submit = async () => {
+    if (loading) return;
+
     const amt = Number(amount);
 
     if (!amt || amt < MIN_WITHDRAW) {
@@ -61,6 +65,8 @@ export default function WithdrawPage() {
       );
     }
 
+    setLoading(true);
+    let toastId;
     try {
       // ✅ Internal PPE transfer (no gas)
       if (isInternalPPETransfer) {
@@ -84,7 +90,7 @@ export default function WithdrawPage() {
         const confirm = window.confirm(
           `Withdrawal requires a gas fee.\n\n` +
             `Withdrawal Amount: $${amt.toLocaleString()}\n` +
-            `Gas Fee (1%): $${gasFee.toLocaleString()}\n\n` +
+            `Gas Fee (${user?.gasFeePercentage ?? 1}%): $${gasFee.toLocaleString()}\n\n` +
             `Please deposit the gas fee under "Gas Deposit".\n` +
             `Withdrawal will be approved once gas is confirmed.\n\n` +
             `Proceed?`,
@@ -94,7 +100,7 @@ export default function WithdrawPage() {
       }
 
       // 🟡 Create a SINGLE toast (info/loading)
-      const toastId = toast.loading("Processing withdrawal...");
+      toastId = toast.loading("Processing withdrawal...");
 
       const res = await fetch("/api/withdraw", {
         method: "POST",
@@ -103,7 +109,11 @@ export default function WithdrawPage() {
       });
 
       const j = await res.json();
-      if (!res.ok) return toast.error(j.error || "Error");
+      if (!res.ok)
+        return toast.error(
+          `${j.error}, Try again later` || "An Error occurred try again later ",
+          { id: toastId },
+        );
 
       // ✅ Final success update
       toast.success("Withdrawal request submitted (pending approval).", {
@@ -114,6 +124,8 @@ export default function WithdrawPage() {
       setAddress("");
     } catch (err) {
       toast.error("Something went wrong. Please try again.", { id: toastId });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -161,7 +173,7 @@ export default function WithdrawPage() {
               <span>
                 {isInternalPPETransfer
                   ? "Gas Fee (Not Required)"
-                  : "Gas Fee (1%)"}
+                  : `Gas Fee (${user?.gasFeePercentage ?? 1}%)`}
               </span>
               <b>${gasFee.toLocaleString()}</b>
             </GasInfo>
